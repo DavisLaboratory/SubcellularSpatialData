@@ -49,5 +49,6 @@ po/*~
 rsconnect/
 
 #custom
-data_local/*
+data-local/*
 inst/doc
+.DS_Store
