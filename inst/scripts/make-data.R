@@ -21,7 +21,8 @@ df_xenium = readRDS('data-local/Xenium_Mar23.rds') |>
     technology = 'Xenium'
   ) |> 
   dplyr::rename(region = RegionID, level = Level) |> 
-  relocate(sample, cell, gene, genetype, x, y, counts, region, technology, level, Level0:Level11)
+  dplyr::rename(sample = 'sample_id') |> 
+  relocate(sample_id, cell, gene, genetype, x, y, counts, region, technology, level, Level0:Level11)
 saveRDS(df_xenium, 'data-local/xenium_mm_brain.rds')
 
 #stomics
@@ -30,7 +31,8 @@ df_stomics = readRDS('data-local/STOmics_Brain.rds') |>
   dplyr::rename(gene = geneID, cell = label, counts = MIDCounts) |> 
   mutate(technology = 'STOmics', genetype = 'Gene') |> 
   dplyr::rename(region = RegionID, level = Level) |> 
-  relocate(sample, cell, gene, genetype, x, y, counts, region, technology, level, Level0:Level11)
+  dplyr::rename(sample = 'sample_id') |> 
+  relocate(sample_id, cell, gene, genetype, x, y, counts, region, technology, level, Level0:Level11)
 saveRDS(df_stomics, 'data-local/stomics_mm_brain.rds')
 
 #cosmx
@@ -60,5 +62,6 @@ df_cosmx = readRDS('data-local/CosMx_NSCLC_tx_annotated.rds') |>
     TRUE ~ RegionID
   )) |> 
   dplyr::rename(region = RegionID) |> 
-  relocate(sample, cell, gene, genetype, x, y, counts, region, technology, Level1:Level2)
+  dplyr::rename(sample = 'sample_id') |> 
+  relocate(sample_id, cell, gene, genetype, x, y, counts, region, technology, Level1:Level2)
 saveRDS(df_cosmx, 'data-local/cosmx_hs_nsclc.rds')

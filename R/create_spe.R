@@ -17,7 +17,7 @@ tx2spe <- function(x, bin = c('cell', 'hex'), nbins = 100) {
     x = dplyr::rename(x, bin_id = cell)
   } else {
     x = x |> 
-      dplyr::group_by(sample) |> 
+      dplyr::group_by(sample_id) |> 
       dplyr::mutate(bin_id = allocateHex(x, y, nbins)) |> 
       dplyr::group_by(bin_id, .add = TRUE) |> 
       dplyr::mutate(ncell = length(stats::na.omit(unique(cell)))) |> 
@@ -29,23 +29,22 @@ tx2spe <- function(x, bin = c('cell', 'hex'), nbins = 100) {
   bin_annot = x |> 
     dplyr::filter(!is.na(bin_id)) |> 
     dplyr::select(!c(gene, genetype, counts)) |> 
-    dplyr::group_by(sample, bin_id, dplyr::across(dplyr::where(is.character))) |> 
+    dplyr::group_by(sample_id, bin_id, dplyr::across(dplyr::where(is.character))) |> 
     dplyr::summarise(N = dplyr::n()) |> 
     dplyr::group_by(dplyr::across(c(-N))) |> 
     dplyr::arrange(N) |> 
     dplyr::ungroup() |> 
-    dplyr::filter(!duplicated(paste(sample, bin_id))) |> 
+    dplyr::filter(!duplicated(paste(sample_id, bin_id))) |> 
     dplyr::select(!N)
   
   #process numeric annotations
   bin_annot = x |> 
     dplyr::filter(!is.na(bin_id)) |> 
     dplyr::select(!c(gene, genetype, counts)) |> 
-    dplyr::group_by(sample, bin_id) |> 
+    dplyr::group_by(sample_id, bin_id) |> 
     dplyr::summarise(dplyr::across(dplyr::where(is.numeric), ~ median(.x))) |> 
-    dplyr::full_join(bin_annot, by = dplyr::join_by(sample, bin_id)) |> 
-    dplyr::mutate(rname = paste(sample, bin_id, sep = '_')) |> 
-    dplyr::rename(sample_id = sample) |> 
+    dplyr::full_join(bin_annot, by = dplyr::join_by(sample_id, bin_id)) |> 
+    dplyr::mutate(rname = paste(sample_id, bin_id, sep = '_')) |> 
     as.data.frame()
   #add rownames
   rownames(bin_annot) = bin_annot$rname
@@ -64,7 +63,7 @@ tx2spe <- function(x, bin = c('cell', 'hex'), nbins = 100) {
   counts = x |> 
     dplyr::filter(!is.na(bin_id)) |> 
     dplyr::mutate(
-      rname = as.factor(paste(sample, bin_id, sep = '_')),
+      rname = as.factor(paste(sample_id, bin_id, sep = '_')),
       gene = as.factor(gene)
     ) |> 
     dplyr::select(c(rname, gene, counts)) |> 
