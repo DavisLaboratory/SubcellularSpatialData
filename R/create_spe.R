@@ -20,8 +20,15 @@ tx2spe <- function(x, bin = c('cell', 'hex'), nbins = 100) {
       dplyr::group_by(sample_id) |> 
       dplyr::mutate(bin_id = allocateHex(x, y, nbins)) |> 
       dplyr::group_by(bin_id, .add = TRUE) |> 
-      dplyr::mutate(ncell = length(stats::na.omit(unique(cell)))) |> 
+      dplyr::mutate(ncells = length(stats::na.omit(unique(cell)))) |> 
       dplyr::ungroup()
+    
+    if ('technology' %in% colnames(x) & x$technology[1] %in% 'STOmics') {
+      x = x |> 
+        dplyr::group_by(sample_id, bin_id) |> 
+        dplyr::mutate(nspots = sum(!duplicated(paste(x, y, sep = '_')))) |> 
+        dplyr::ungroup()
+    }
   }
 
   #create bin annotation
