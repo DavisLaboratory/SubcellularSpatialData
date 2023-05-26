@@ -15,8 +15,8 @@ meta = rbind(
     Maintainer = 'Dharmesh D. Bhuva <dharmesh.bhuva@adelaide.edu.au>',
     RDataClass = 'data.frame',
     DispatchClass = 'Rds',
-    Location_Prefix = 'https://zenodo.org/record/7959787',
-    RDataPath = file.path('files', 'xenium_mm_brain.rds')
+    Location_Prefix = 'https://zenodo.org',
+    RDataPath = 'record/7959787/files/xenium_mm_brain.rds'
   ),
   c(
     Title = 'stomics_mm_brain',
@@ -33,8 +33,8 @@ meta = rbind(
     Maintainer = 'Dharmesh D. Bhuva <dharmesh.bhuva@adelaide.edu.au>',
     RDataClass = 'data.frame',
     DispatchClass = 'Rds',
-    Location_Prefix = 'https://zenodo.org/record/7959787',
-    RDataPath = file.path('files', 'stomics_mm_brain.rds')
+    Location_Prefix = 'https://zenodo.org',
+    RDataPath = 'record/7959787/files/stomics_mm_brain.rds'
   ),
   c(
     Title = 'cosmx_hs_nsclc',
@@ -51,8 +51,8 @@ meta = rbind(
     Maintainer = 'Dharmesh D. Bhuva <dharmesh.bhuva@adelaide.edu.au>',
     RDataClass = 'data.frame',
     DispatchClass = 'Rds',
-    Location_Prefix = 'https://zenodo.org/record/7959787',
-    RDataPath = file.path('files', 'cosmx_hs_nsclc.rds')
+    Location_Prefix = 'https://zenodo.org',
+    RDataPath = 'record/7959787/files/cosmx_hs_nsclc.rds'
   )
 )
 
