@@ -10,15 +10,26 @@
 #' @examples
 #' @export 
 #' 
-tx2spe <- function(x, bin = c('cell', 'hex'), nbins = 100) {
+tx2spe <- function(x, bin = c('cell', 'hex', 'square', 'region'), nbins = 100) {
+  #checks
   bin = match.arg(bin)
+  if (nbins <= 0) stop("Value for 'nbins' should be greater than 0")
+  if (bin == 'region' & !'region' %in% colnames(x)) stop("Required column 'region' not found in input data 'x'")
 
-  if (bin %in% 'cell') {
+  if (bin == 'cell') {
+    warning('Please note that cell segmentation may not be accurate in this data and it may be better to use other binning strategies.')
     x = dplyr::rename(x, bin_id = cell)
-  } else {
+  } else if (bin %in% c('hex', 'square', 'region')) {
+    allocateFun = switch(
+      bin,
+      hex = allocateHex,
+      square = allocateSquare,
+      region = allocateRegion
+    )
+
     x = x |> 
       dplyr::group_by(sample_id) |> 
-      dplyr::mutate(bin_id = allocateHex(x, y, nbins)) |> 
+      dplyr::mutate(bin_id = allocateFun(x, y, bins = nbins, regions = region)) |> 
       dplyr::group_by(bin_id, .add = TRUE) |> 
       dplyr::mutate(ncells = length(stats::na.omit(unique(cell)))) |> 
       dplyr::ungroup()
@@ -49,7 +60,7 @@ tx2spe <- function(x, bin = c('cell', 'hex'), nbins = 100) {
     dplyr::filter(!is.na(bin_id)) |> 
     dplyr::select(!c(gene, genetype, counts)) |> 
     dplyr::group_by(sample_id, bin_id) |> 
-    dplyr::summarise(dplyr::across(dplyr::where(is.numeric), ~ median(.x))) |> 
+    dplyr::summarise(dplyr::across(dplyr::where(is.numeric), ~ mean(.x))) |> 
     dplyr::full_join(bin_annot, by = dplyr::join_by(sample_id, bin_id)) |> 
     dplyr::mutate(rname = paste(sample_id, bin_id, sep = '_')) |> 
     as.data.frame()
@@ -58,7 +69,7 @@ tx2spe <- function(x, bin = c('cell', 'hex'), nbins = 100) {
   bin_annot = bin_annot |> dplyr::select(!rname)
 
   #change bin_id to cell/hex id
-  colnames(bin_annot)[which(colnames(bin_annot) %in% 'bin_id')] = ifelse(bin == 'cell', 'cell_id', 'hex_id')
+  colnames(bin_annot)[which(colnames(bin_annot) %in% 'bin_id')] = ifelse(bin == 'cell', 'cell_id', 'bin_id')
   
   #create gene annotation
   gene_annot = x |> 
@@ -98,13 +109,13 @@ tx2spe <- function(x, bin = c('cell', 'hex'), nbins = 100) {
 #' Allocate points to hexbins
 #'
 #' @param x a numeric, containing x-coordinates
-#' @param y a numeric, containing x-coordinates
+#' @param y a numeric, containing y-coordinates
 #' @param bins a numeric, stating the number of bins partitioning the range of x 
 #'
 #' @return a numeric, containing the index of bins to which each point was allocated
 #'
 #' @examples
-allocateHex <- function(x, y, bins = 30) {
+allocateHex <- function(x, y, bins = 30, ...) {
   stopifnot(length(x) == length(y))
   stopifnot(bins > 0)
   
@@ -118,4 +129,44 @@ allocateHex <- function(x, y, bins = 30) {
   hix = hixmap[as.character(hix)]
   
   return(hix)
+}
+
+#' Allocate points to a regular square grid
+#'
+#' @param x a numeric, containing x-coordinates
+#' @param y a numeric, containing y-coordinates
+#' @param bins a numeric, stating the number of bins partitioning the range of x 
+#'
+#' @return a numeric, containing the index of bins to which each point was allocated
+#'
+#' @examples
+allocateSquare <- function(x, y, bins = 30, ...) {
+  stopifnot(length(x) == length(y))
+  stopifnot(bins > 0)
+  
+  #compute bin widths
+  bw = diff(range(x)) / bins
+  x = ceiling((x - min(x)) / bw)
+  y = ceiling((y - min(y)) / bw)
+  x[x == 0] = 1
+  y[y == 0] = 1
+  sqix = paste(x, y, sep = '_')
+
+  return(sqix)
+}
+
+#' Allocate points to annotated regions
+#'
+#' @param x a numeric, containing x-coordinates
+#' @param y a numeric, containing y-coordinates
+#' @param regions a character, specifying the regions
+#'
+#' @return a numeric, containing the index of bins to which each point was allocated
+#'
+#' @examples
+allocateRegion <- function(x, y, regions, ...) {
+  stopifnot(length(x) == length(y))
+  stopifnot(length(x) == length(regions))
+  
+  return(regions)
 }
