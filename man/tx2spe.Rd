@@ -4,7 +4,7 @@
 \alias{tx2spe}
 \title{Compute cell/bin-level summaries and save to a SpatialExperiment object}
 \usage{
-tx2spe(x, bin = c("cell", "hex"), nbins = 100)
+tx2spe(x, bin = c("cell", "hex", "square", "region"), nbins = 100)
 }
 \arguments{
 \item{x}{a data.frame containing a sub-cellular localised dataset from the SubcellularSpatialData package.}
