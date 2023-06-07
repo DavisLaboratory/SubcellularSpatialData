@@ -27,9 +27,14 @@ tx2spe <- function(x, bin = c('cell', 'hex', 'square', 'region'), nbins = 100) {
       region = allocateRegion
     )
 
+    #compute binning and the number of cells in the bin
     x = x |> 
-      dplyr::group_by(sample_id) |> 
-      dplyr::mutate(bin_id = allocateFun(x, y, bins = nbins, regions = region)) |> 
+      split(x$sample_id) |>
+      lapply(\(df) {
+        df |>
+          cbind(allocateFun(df$x, df$y, bins = nbins, regions = df$region))
+      }) |> 
+      do.call(what = 'rbind') |> 
       dplyr::group_by(bin_id, .add = TRUE) |> 
       dplyr::mutate(ncells = length(stats::na.omit(unique(cell)))) |> 
       dplyr::ungroup()
@@ -124,9 +129,10 @@ allocateHex <- function(x, y, bins = 30, ...) {
   hix = hx@cID
   hxy = hexbin::hcell2xy(hx)
   #remap hex cell ids
-  hixmap = 1:length(hx@cell)
+  hixmap = seq_len(length(hx@cell))
   names(hixmap) = hx@cell
   hix = hixmap[as.character(hix)]
+  hix = data.frame(bin_id = hix, bin_x = hxy$x[hix], bin_y = hxy$y[hix])
   
   return(hix)
 }
@@ -150,7 +156,8 @@ allocateSquare <- function(x, y, bins = 30, ...) {
   y = ceiling((y - min(y)) / bw)
   x[x == 0] = 1
   y[y == 0] = 1
-  sqix = paste(x, y, sep = '_')
+  max_x = max(x)
+  sqix = data.frame(bin_id = x + (y - 1) * max_x, bin_x = x, bin_y = y)
 
   return(sqix)
 }
@@ -167,6 +174,7 @@ allocateSquare <- function(x, y, bins = 30, ...) {
 allocateRegion <- function(x, y, regions, ...) {
   stopifnot(length(x) == length(y))
   stopifnot(length(x) == length(regions))
+  regions = data.frame(bin_id = regions)
   
   return(regions)
 }
