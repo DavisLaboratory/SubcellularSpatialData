@@ -60,7 +60,7 @@ tx2spe <- function(x, bin = c('cell', 'hex', 'square', 'region'), nbins = 100) {
     dplyr::filter(!is.na(bin_id)) |> 
     dplyr::select(!c(gene, genetype, counts)) |> 
     dplyr::group_by(sample_id, bin_id) |> 
-    dplyr::summarise(dplyr::across(dplyr::where(is.numeric), ~ mean(.x))) |> 
+    dplyr::summarise(dplyr::across(dplyr::where(is.numeric), ~ mean(.x, na.rm = TRUE))) |> 
     dplyr::full_join(bin_annot, by = dplyr::join_by(sample_id, bin_id)) |> 
     dplyr::mutate(rname = paste(sample_id, bin_id, sep = '_')) |> 
     as.data.frame()
