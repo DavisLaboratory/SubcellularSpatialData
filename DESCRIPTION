@@ -1,6 +1,6 @@
 Package: SubcellularSpatialData
 Title: Annotated spatial transcriptomics datasets from 10x Xenium, NanoString CosMx and BGI STOmics.
-Version: 0.99.5
+Version: 0.99.6
 Authors@R: c(
             person(given = "Dharmesh D.",
                    family = "Bhuva",
@@ -27,3 +27,6 @@ VignetteBuilder: knitr
 Suggests: 
     knitr,
     rmarkdown
+Depends: 
+    R (>= 2.10)
+LazyData: true

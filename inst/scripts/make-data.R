@@ -25,6 +25,25 @@ df = readRDS('data-local/Xenium_Mar23.rds') |>
   relocate(sample_id, cell, gene, genetype, x, y, counts, region, technology, level, Level0:Level11)
 saveRDS(df, 'data-local/xenium_mm_brain.rds')
 
+#xenium - breast
+df = readRDS('data-local/Xenium_breast_addon_tx_annotated.rds') |> 
+  dplyr::rename(cell = cell_id, gene = feature_name, x = x_location, y = y_location) |> 
+  mutate(
+    genetype = case_when(
+      grepl('BLANK', gene) ~ 'NegBlank',
+      grepl('NegControlProbe', gene) ~ 'NegPrb',
+      grepl('NegControlCodeword', gene) ~ 'NegCW',
+      TRUE ~ 'Gene'
+    ),
+    cell = ifelse(cell == -1, NA_integer_, cell),
+    counts = 1,
+    technology = 'Xenium'
+  ) |> 
+  dplyr::rename(region = RegionID) |> 
+  dplyr::rename(sample_id = 'sample') |> 
+  relocate(sample_id, cell, gene, genetype, x, y, counts, region, technology)
+saveRDS(df, 'data-local/xenium_hs_breast_addon.rds')
+
 #stomics
 df = readRDS('data-local/STOmics_Brain.rds') |> 
   select(!UMICount) |> 
