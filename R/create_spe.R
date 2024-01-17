@@ -124,16 +124,23 @@ allocateHex <- function(x, y, bins = 30, ...) {
   stopifnot(length(x) == length(y))
   stopifnot(bins > 0)
   
-  #compute hexbins
+  # compute hexbins
   hx = hexbin::hexbin(x, y, xbins = bins, IDs = TRUE)
   hix = hx@cID
+
+  # compute bin coords
   hxy = hexbin::hcell2xy(hx)
-  #remap hex cell ids
-  hixmap = seq_len(length(hx@cell))
-  names(hixmap) = hx@cell
-  hix = hixmap[as.character(hix)]
-  hix = data.frame(bin_id = hix, bin_x = hxy$x[hix], bin_y = hxy$y[hix])
-  
+  names(hxy$x) = names(hxy$y) = as.character(hx@cell)
+  nbinx = hx@dimen[2]
+  bin_y = trunc((hix - 1) / nbinx) # compute y index
+  hix = data.frame(
+    bin_id = hix,
+    bin_x = (hix - 1) %% nbinx * 2 + bin_y %% 2,
+    bin_y = bin_y,
+    coord_x = hxy$x[as.character(hix)],
+    coord_y = hxy$y[as.character(hix)]
+  )
+
   return(hix)
 }
 
