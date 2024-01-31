@@ -53,6 +53,24 @@ meta = rbind(
     DispatchClass = 'Rds',
     Location_Prefix = 'https://zenodo.org',
     RDataPath = 'record/7959787/files/cosmx_hs_nsclc.rds'
+  ),
+  c(
+    Title = 'xenium_hs_breast_addon',
+    Description = '10x Xenium dataset of an intraductal carcinoma (IDC) and intralobular carcinoma (ILC) breast cancers. Raw transcript level data is provided with region annotations for each detection obtained using by annotating the accompanying histology image (H&E).',
+    BiocVersion = as.numeric(as.character(BiocManager::version())) + 0.01,
+    Genome = NA,
+    SourceType = 'CSV',
+    SourceUrl = 'https://www.10xgenomics.com/datasets/ffpe-human-breast-with-custom-add-on-panel-1-standard',
+    SourceVersion = '2024-01-31',
+    Species = 'Homo sapiens',
+    TaxonomyId = '9606',
+    Coordinate_1_based = TRUE,
+    DataProvider = '10x',
+    Maintainer = 'Dharmesh D. Bhuva <dharmesh.bhuva@adelaide.edu.au>',
+    RDataClass = 'data.frame',
+    DispatchClass = 'Rds',
+    Location_Prefix = 'https://zenodo.org',
+    RDataPath = "record/10516814/files/xenium_hs_breast_addon.rds"
   )
 )
 
