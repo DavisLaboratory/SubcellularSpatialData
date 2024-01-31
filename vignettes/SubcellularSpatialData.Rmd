@@ -1,6 +1,18 @@
 ---
-title: "SubcellularSpatialData"
-output: rmarkdown::html_vignette
+title: "SubcellularSpatialData: Annotated spatial transcriptomics datasets from 10x Xenium, NanoString CosMx and BGI STOmics."
+author: "Dharmesh D. Bhuva"
+date: "`r BiocStyle::doc_date()`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    toc: yes
+    toc_depth: 2
+    number_sections: yes
+    fig_caption: yes
+    df_print: paged
+abstract: > 
+  This package provides access to region annotated high-resolution spatial transcriptomics datasets from the 10x Xenium, NanoString CosMx, and BGI STOmics platforms. Regions were annotated independently of the transcriptomic measurements, and therefore form a valuable resource for benchmarking novel computational methods being developed in the field of spatial bioinformatics.
+
 vignette: >
   %\VignetteIndexEntry{SubcellularSpatialData}
   %\VignetteEngine{knitr::rmarkdown}
@@ -10,10 +22,108 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  warning = FALSE,
+  message = FALSE,
   comment = "#>"
 )
 ```
 
-```{r setup}
+# SubcellularSpatialData
+
+The data in this package is published in the publication Bhuva et al., _Genome Biology_, 2024. Annotations for each dataset are obtained independently of the molecular measurements. The lowest level of measurement is annotated for each dataset. For BGI STOmics, this is each DNA nanoball, and for 10x Xenium and NanoString CosMx, these are the individual transcript detections. The package provides functions to convert these unit measurements into higher level summaries such as cells, regions, square bins, or hex bins for analysis purposes. These summaries are stored in SpatialExperiment objects.
+
+The SubcellularSpatialData package can be downloaded as follows:
+
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("SubcellularSpatialData")
+```
+
+# Download data from the SubcellularSpatialData R package
+
+To download the data, we first need to get a list of the data available in the `SubcellularSpatialData` package and determine the unique identifiers for each data. The `query()` function assists in getting this list.
+
+```{r load-packages, message=FALSE}
 library(SubcellularSpatialData)
+library(ExperimentHub)
+```
+
+```{r get-SubcellularSpatialData}
+eh = ExperimentHub()
+query(eh, "SubcellularSpatialData")
+```
+
+Data can then be downloaded using the unique identifier.
+```{r download-SubcellularSpatialData, eval=FALSE}
+eh[["EH8230"]]
+```
+
+As the datasets are large in size, the code above is not executed. Instead, we will explore the package using a subsampled dataset that is available within the package.
+
+```{r}
+# load internal sample data
+data(tx_small)
+# view data
+head(tx_small)
+```
+
+The data is in the form of a transcript table where the following columns are present across all datasets:
+
+1. _sample_id_ - Unique identifier for the sample the transcript belongs to.
+1. _cell_ - Unique identifier for the cell the transcript belongs to (NA if it is not allocated to any cell).
+1. _gene_ - Gene name or identity of the transcript.
+1. _genetype_ - Type of target (gene or control probe).
+1. _x_ - x-coordinate of the transcript.
+1. _y_ - y-coordinate of the transcript.
+1. _counts_ - Number of transcripts detected at this location (always 1 for NanoString CosMx and 10x Xenium as each row is an individual detection).
+1. _region_ - Annotated histological region for the transcript.
+1. _technology_ - Name of the platform the data was sequenced on.
+
+Additional columns may be present for different technologies.
+
+We now visualise the data on a spatial plot
+
+```{r}
+library(ggplot2)
+tx_small |>
+  ggplot(aes(x, y, colour = region)) +
+  geom_point(pch = ".") +
+  scale_colour_brewer(palette = "Set2", guide = guide_legend(override.aes = list(shape = 15, size = 5))) +
+  facet_wrap(~sample_id, ncol = 2, scales = "free") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+# Summarising transcripts into cells, bins, and regions
+
+The transcript table is highly detailed containing a low-level form of measurement. Users may be more interestered in working on binned counts, cellular counts, or region-specific pseudo-bulked samples. These can be obtained using the helper function `tx2spe()`. For cellular counts, the original cell binning provided by the vendor is used. Transcript aggregation is performed separately per sample therefore users do not need to separate data per sample.
+
+> Please note that BGI only performs nuclear binning of counts therefore cellular counts obtained will represent nuclear counts only. We recommended that for fair evaluations during benchmarking, alternative binning algorithms that are fair are explored, or analysis be performed on square or hex binned counts.
+
+```{r}
+library(SpatialExperiment)
+
+# summarising counts per cell
+tx2spe(tx_small, bin = "cell")
+
+# summarising counts per square bin
+tx2spe(tx_small, bin = "square", nbins = 30)
+
+# summarising counts per hex bin
+tx2spe(tx_small, bin = "hex", nbins = 30)
+
+# summarising counts per region
+tx2spe(tx_small, bin = "region")
+```
+
+When transcript counts are aggregated (using any approach), aggregation of numeric columns is performed using the `mean(..., na.rm = TRUE)` function and aggregation of character/factor columns is performed such that the most frequent class becomes the representative class. As such, for a hex bin, the highest frequency region for the transcripts allocated to the bin becomes the bin's region annotation. New coordinates for cells, bins, or regions are computed using the mean function as well, therefore represent the center of mass for the object. For hex and square bins, the average coordinate is computed by default, however, x and y indices for the bin are stored in the colData under the *bin_x* and *bin_y* columns. 
+
+When aggregation is perfomed using bins or regions, an additional column, _ncells_, is computed that indicates how many unique cells are present within the bin/region. Do note that if a cell overlaps multiple bins/regions, it will be counted in each bin/region.
+
+# Session Info
+
+```{r}
+sessionInfo()
 ```
