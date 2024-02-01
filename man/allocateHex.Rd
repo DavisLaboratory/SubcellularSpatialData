@@ -12,6 +12,8 @@ allocateHex(x, y, bins = 30, ...)
 \item{y}{a numeric, containing y-coordinates}
 
 \item{bins}{a numeric, stating the number of bins partitioning the range of x}
+
+\item{...}{additional args if needed}
 }
 \value{
 a numeric, containing the index of bins to which each point was allocated

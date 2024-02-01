@@ -12,6 +12,8 @@ allocateRegion(x, y, regions, ...)
 \item{y}{a numeric, containing y-coordinates}
 
 \item{regions}{a character, specifying the regions}
+
+\item{...}{additional args if needed}
 }
 \value{
 a numeric, containing the index of bins to which each point was allocated
