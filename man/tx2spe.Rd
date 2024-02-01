@@ -14,8 +14,40 @@ tx2spe(x, bin = c("cell", "hex", "square", "region"), nbins = 100)
 \item{nbins}{a numeric, stating the number of bins to create in the x and y axes}
 }
 \value{
-a SpatialExperiment object containing cell/hexbin-level expression quantification.
+a SpatialExperiment object containing cell/bin/region-level expression quantification.
 }
 \description{
 This function summarises transcript detection (or DNA nanoball spot counts) into cells or hexbins and returns a SpatialExperiment object. Annotations of cells or hexbins are summarised such that the most frequent annotation is used.
+}
+\section{Data description}{
+
+This function works on all data associated with this package. For new datasets, the transcript table MUST have the following columns:
+\itemize{
+\item{sample_id} {Unique identifier for the sample the transcript belongs to.}
+\item{cell} {Unique identifier for the cell the transcript belongs to (NA if it is not allocated to any cell).}
+\item{gene} {Gene name or identity of the transcript.}
+\item{genetype} {Type of target (e.g., gene or control probe). True genes should be annotated as "Gene". Other target types can be named as desired.}
+\item{x} {x-coordinate of the transcript.}
+\item{y} {y-coordinate of the transcript.}
+\item{counts} {Number of transcripts detected at this location (always 1 for NanoString CosMx and 10x Xenium as each row is an individual detection).}
+\item{technology} {Name of the platform the data was sequenced on. "STOmics" is treated differently as the number of spots as well as the number of nuclei/cells are counted. No specific format required for other technologies.}
+}
+
+The "region" column is optional and only required if binning by regions. If present, it must be a character or factor. For datasets within this package, this column stored the independently annotated histological region.
+}
+
+\section{Summarisation}{
+
+When transcript counts are aggregated (using any approach), aggregation of numeric columns is performed using the \code{mean(..., na.rm = TRUE)} function and aggregation of character/factor columns is performed such that the most frequent class becomes the representative class. As such, for a hex bin, the highest frequency region for the transcripts allocated to the bin becomes the bin's region annotation. New coordinates for cells, bins, or regions are computed using the mean function as well, therefore represent the center of mass for the object. For hex and square bins, the average coordinate is computed by default, however, x and y indices for the bin are stored in the colData under the \emph{bin_x} and \emph{bin_y} columns.
+
+When aggregation is perfomed using bins or regions, an additional column, \emph{ncells}, is computed that indicates how many unique cells are present within the bin/region. Do note that if a cell overlaps multiple bins/regions, it will be counted in each bin/region.
+
+Please note that BGI only performs nuclear binning of counts therefore cellular counts obtained will represent nuclear counts only. We recommended that for fair evaluations during benchmarking, alternative binning algorithms that are fair are explored, or analysis be performed on square or hex binned counts.
+}
+
+\examples{
+data(tx_small)
+head(tx_small)
+tx2spe(tx_small, "region")
+
 }

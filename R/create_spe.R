@@ -5,19 +5,62 @@
 #' @param x a data.frame containing a sub-cellular localised dataset from the SubcellularSpatialData package.
 #' @param bin a character, stating whether transcripts should be binned into cells or hexbins. The default is 'cell', however, it is advisable to use 'hexbin' when cell identification is not accurate (e.g., when cell boundaries are inferred only from nuclei and not directly measured using cytoplasmic/cell membrane stains).
 #' @param nbins a numeric, stating the number of bins to create in the x and y axes
-#'
-#' @return a SpatialExperiment object containing cell/hexbin-level expression quantification.
+#' 
+#' @details 
+#' 
+#' @section Data description:
+#' This function works on all data associated with this package. For new datasets, the transcript table MUST have the following columns:
+#' \itemize{
+#'  \item{sample_id} {Unique identifier for the sample the transcript belongs to.}
+#'  \item{cell} {Unique identifier for the cell the transcript belongs to (NA if it is not allocated to any cell).}
+#'  \item{gene} {Gene name or identity of the transcript.}
+#'  \item{genetype} {Type of target (e.g., gene or control probe). True genes should be annotated as "Gene". Other target types can be named as desired.}
+#'  \item{x} {x-coordinate of the transcript.}
+#'  \item{y} {y-coordinate of the transcript.}
+#'  \item{counts} {Number of transcripts detected at this location (always 1 for NanoString CosMx and 10x Xenium as each row is an individual detection).}
+#'  \item{technology} {Name of the platform the data was sequenced on. "STOmics" is treated differently as the number of spots as well as the number of nuclei/cells are counted. No specific format required for other technologies.} 
+#' }
+#' 
+#' The "region" column is optional and only required if binning by regions. If present, it must be a character or factor. For datasets within this package, this column stored the independently annotated histological region.
+#' 
+#' @section Summarisation:
+#' When transcript counts are aggregated (using any approach), aggregation of numeric columns is performed using the `mean(..., na.rm = TRUE)` function and aggregation of character/factor columns is performed such that the most frequent class becomes the representative class. As such, for a hex bin, the highest frequency region for the transcripts allocated to the bin becomes the bin's region annotation. New coordinates for cells, bins, or regions are computed using the mean function as well, therefore represent the center of mass for the object. For hex and square bins, the average coordinate is computed by default, however, x and y indices for the bin are stored in the colData under the *bin_x* and *bin_y* columns. 
+#' 
+#' When aggregation is perfomed using bins or regions, an additional column, _ncells_, is computed that indicates how many unique cells are present within the bin/region. Do note that if a cell overlaps multiple bins/regions, it will be counted in each bin/region.
+#' 
+#' Please note that BGI only performs nuclear binning of counts therefore cellular counts obtained will represent nuclear counts only. We recommended that for fair evaluations during benchmarking, alternative binning algorithms that are fair are explored, or analysis be performed on square or hex binned counts.
+#' 
+#' @return a SpatialExperiment object containing cell/bin/region-level expression quantification.
 #' @examples
+#' data(tx_small)
+#' head(tx_small)
+#' tx2spe(tx_small, "region")
+#' 
 #' @export 
 #' 
 tx2spe <- function(x, bin = c('cell', 'hex', 'square', 'region'), nbins = 100) {
-  #checks
+  required_cols = c("sample_id", "cell", "gene", "genetype", "x", "y", "counts", "technology")
+
+  # checks
   bin = match.arg(bin)
+  # missing cols
+  missing_cols = setdiff(required_cols, colnames(x))
+  if (length(missing_cols) > 0) {
+    stop(paste0("The following columns are missing from the provided transcript table 'x': ", paste(missing_cols, collapse = ", ")))
+  }
+  # invalid bins
   if (nbins <= 0) stop("Value for 'nbins' should be greater than 0")
-  if (bin == 'region' & !'region' %in% colnames(x)) stop("Required column 'region' not found in input data 'x'")
+  if (bin == "region" & !"region" %in% colnames(x)) stop("Required column 'region' missing from the provided transcript table 'x'")
+  
+  # check types for required cols
+  if (!any(x$genetype == "Gene")) stop("No genes found. Ensure genes are marked by \"Gene\" in the \'genetype\' column.")
+  if (!is.numeric(x$x)) stop("\"x\" coordinates must be numeric in the transcript table 'x'.")
+  if (!is.numeric(x$y)) stop("\"y\" coordinates must be numeric in the transcript table 'x'.")
+  if (!is.numeric(x$counts)) stop("\"counts\" coordinates must be numeric in the transcript table 'x'.")
 
   if (bin == 'cell') {
-    warning('Please note that cell segmentation may not be accurate in this data and it may be better to use other binning strategies.')
+    warning('Please note that cell segmentation may not be accurate in this data and it may be better to use other binning strategies.Refer to function documentation for details.')
+    x = dplyr::mutate(x, cell = as.character(cell))
     x = dplyr::rename(x, bin_id = cell)
   } else if (bin %in% c('hex', 'square', 'region')) {
     allocateFun = switch(
@@ -116,6 +159,7 @@ tx2spe <- function(x, bin = c('cell', 'hex', 'square', 'region'), nbins = 100) {
 #' @param x a numeric, containing x-coordinates
 #' @param y a numeric, containing y-coordinates
 #' @param bins a numeric, stating the number of bins partitioning the range of x 
+#' @param ... additional args if needed
 #'
 #' @return a numeric, containing the index of bins to which each point was allocated
 #'
@@ -149,6 +193,7 @@ allocateHex <- function(x, y, bins = 30, ...) {
 #' @param x a numeric, containing x-coordinates
 #' @param y a numeric, containing y-coordinates
 #' @param bins a numeric, stating the number of bins partitioning the range of x 
+#' @param ... additional args if needed
 #'
 #' @return a numeric, containing the index of bins to which each point was allocated
 #'
@@ -174,6 +219,7 @@ allocateSquare <- function(x, y, bins = 30, ...) {
 #' @param x a numeric, containing x-coordinates
 #' @param y a numeric, containing y-coordinates
 #' @param regions a character, specifying the regions
+#' @param ... additional args if needed
 #'
 #' @return a numeric, containing the index of bins to which each point was allocated
 #'
