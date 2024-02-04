@@ -59,7 +59,7 @@ tx2spe <- function(x, bin = c('cell', 'hex', 'square', 'region'), nbins = 100) {
   if (!is.numeric(x$counts)) stop("\"counts\" coordinates must be numeric in the transcript table 'x'.")
 
   if (bin == 'cell') {
-    warning('Please note that cell segmentation may not be accurate in this data and it may be better to use other binning strategies.Refer to function documentation for details.')
+    warning('Please note that cell segmentation may not be accurate in this data and it may be better to use other binning strategies. Refer to function documentation for details.')
     x = dplyr::mutate(x, cell = as.character(cell))
     x = dplyr::rename(x, bin_id = cell)
   } else if (bin %in% c('hex', 'square', 'region')) {
