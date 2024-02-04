@@ -90,18 +90,17 @@ tx2spe <- function(x, bin = c('cell', 'hex', 'square', 'region'), nbins = 100) {
     }
   }
 
-  #create bin annotation
-  #process character annotations
-  bin_annot = x |> 
-    dplyr::filter(!is.na(bin_id)) |> 
-    dplyr::select(!c(gene, genetype, counts)) |> 
-    dplyr::group_by(sample_id, bin_id, dplyr::across(dplyr::where(is.character))) |> 
-    dplyr::summarise(N = dplyr::n()) |> 
-    dplyr::group_by(dplyr::across(c(-N))) |> 
-    dplyr::arrange(N) |> 
-    dplyr::ungroup() |> 
-    dplyr::filter(!duplicated(paste(sample_id, bin_id))) |> 
-    dplyr::select(!N)
+  # create bin annotation
+  # process character annotations
+  bin_annot = x |>
+    dplyr::filter(!is.na(bin_id)) |>
+    dplyr::select(!c(gene, genetype)) |>
+    dplyr::select(sample_id, bin_id, dplyr::where(is.character)) |>
+    dplyr::group_by(sample_id, bin_id) |>
+    dplyr::summarise(dplyr::across(everything(),
+      ~ ifelse(all(is.na(.x)), NA_character_, table(na.omit(.x)) |> sort() |> names() |> tail(1))
+    )) |> 
+    dplyr::ungroup()
   
   #process numeric annotations
   bin_annot = x |> 
