@@ -3,7 +3,7 @@ meta = rbind(
   c(
     Title = 'xenium_mm_brain',
     Description = '10x Xenium dataset of 3 serial sections of fresh frozen mouse brain. Raw transcript level data is provided with region annotations for each detection obtained using image registration of the DAPI image to the Allen Brain Atlas. The Aligning Big Brain Atlases (ABBA) plugin in ImageJ was used for image registration.',
-    BiocVersion = as.numeric(as.character(BiocManager::version())) + 0.01,
+    BiocVersion = 3.18,
     Genome = NA,
     SourceType = 'CSV',
     SourceUrl = 'https://www.10xgenomics.com/resources/datasets/fresh-frozen-mouse-brain-replicates-1-standard',
@@ -21,7 +21,7 @@ meta = rbind(
   c(
     Title = 'stomics_mm_brain',
     Description = 'BGI STOmics dataset of the mouse brain. Raw DNA nanoball spot level data is provided with region annotations for each spot obtained using image registration of the DAPI image to the Allen Brain Atlas. The Aligning Big Brain Atlases (ABBA) plugin in ImageJ was used for image registration.',
-    BiocVersion = as.numeric(as.character(BiocManager::version())) + 0.01,
+    BiocVersion = 3.18,
     Genome = NA,
     SourceType = 'TSV',
     SourceUrl = 'https://ftp.cngb.org/pub/SciRAID/stomics/STDS0000058/Bin1_matrix/Mouse_brain_Adult_GEM_bin1.tsv.gz',
@@ -39,7 +39,7 @@ meta = rbind(
   c(
     Title = 'cosmx_hs_nsclc',
     Description = 'NanoString CosMx dataset of FFPE tissues from 5 non-small cell lung cancer (NSCLC) patients. Lung 5 has 2 serial sections while Lung 9 has 2 non-serial (different location of the tumour) sections from the same patient. Raw transcript level data is provided with region annotations for each detection obtained using expert annotation from a biologist.',
-    BiocVersion = as.numeric(as.character(BiocManager::version())) + 0.01,
+    BiocVersion = 3.18,
     Genome = NA,
     SourceType = 'CSV',
     SourceUrl = 'https://nanostring.com/products/cosmx-spatial-molecular-imager/nsclc-ffpe-dataset',
@@ -57,7 +57,7 @@ meta = rbind(
   c(
     Title = 'xenium_hs_breast_addon',
     Description = '10x Xenium dataset of an intraductal carcinoma (IDC) and intralobular carcinoma (ILC) breast cancers. Raw transcript level data is provided with region annotations for each detection obtained using by annotating the accompanying histology image (H&E).',
-    BiocVersion = as.numeric(as.character(BiocManager::version())) + 0.01,
+    BiocVersion = 3.19,
     Genome = NA,
     SourceType = 'CSV',
     SourceUrl = 'https://www.10xgenomics.com/datasets/ffpe-human-breast-with-custom-add-on-panel-1-standard',
