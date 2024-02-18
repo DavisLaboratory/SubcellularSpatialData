@@ -21,3 +21,4 @@ a numeric, containing the index of bins to which each point was allocated
 \description{
 Allocate points to annotated regions
 }
+\keyword{internal}

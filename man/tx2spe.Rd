@@ -19,7 +19,8 @@ a SpatialExperiment object containing cell/bin/region-level expression quantific
 \description{
 This function summarises transcript detection (or DNA nanoball spot counts) into cells or hexbins and returns a SpatialExperiment object. Annotations of cells or hexbins are summarised such that the most frequent annotation is used.
 }
-\section{Data description}{
+\details{
+\subsection{Data description}{
 
 This function works on all data associated with this package. For new datasets, the transcript table MUST have the following columns:
 \itemize{
@@ -36,7 +37,7 @@ This function works on all data associated with this package. For new datasets, 
 The "region" column is optional and only required if binning by regions. If present, it must be a character or factor. For datasets within this package, this column stored the independently annotated histological region.
 }
 
-\section{Summarisation}{
+\subsection{Summarisation}{
 
 When transcript counts are aggregated (using any approach), aggregation of numeric columns is performed using the \code{mean(..., na.rm = TRUE)} function and aggregation of character/factor columns is performed such that the most frequent class becomes the representative class. As such, for a hex bin, the highest frequency region for the transcripts allocated to the bin becomes the bin's region annotation. New coordinates for cells, bins, or regions are computed using the mean function as well, therefore represent the center of mass for the object. For hex and square bins, the average coordinate is computed by default, however, x and y indices for the bin are stored in the colData under the \emph{bin_x} and \emph{bin_y} columns.
 
@@ -44,7 +45,7 @@ When aggregation is perfomed using bins or regions, an additional column, \emph{
 
 Please note that BGI only performs nuclear binning of counts therefore cellular counts obtained will represent nuclear counts only. We recommended that for fair evaluations during benchmarking, alternative binning algorithms that are fair are explored, or analysis be performed on square or hex binned counts.
 }
-
+}
 \examples{
 data(tx_small)
 head(tx_small)

@@ -1,6 +1,6 @@
 Package: SubcellularSpatialData
 Title: Annotated spatial transcriptomics datasets from 10x Xenium, NanoString CosMx and BGI STOmics.
-Version: 0.99.11
+Version: 0.99.12
 Authors@R: c(
             person(given = "Dharmesh D.",
                    family = "Bhuva",
@@ -8,7 +8,7 @@ Authors@R: c(
                    email = "dharmesh.bhuva@adelaide.edu.au",
                    comment = c(ORCID = "0000-0002-6398-9157"))
             )
-Description: This is a data package that hosts annotated sub-cellular localised datasets from the Visium, Xenium and CosMx platforms. Specifically, it hosts datasets analysed in the publication Bhuva et. al, 2023 titled "Library size confounds biology in spatial transcriptomics data". Raw transcript detections are hosted and functions to convert them to SpatialExperiment objects have been implemented.
+Description: This is a data package that hosts annotated sub-cellular localised datasets from the STOmics, Xenium and CosMx platforms. Specifically, it hosts datasets analysed in the publication Bhuva et. al, 2024 titled "Library size confounds biology in spatial transcriptomics data". Raw transcript detections are hosted and functions to convert them to SpatialExperiment objects have been implemented.
 biocViews: ExperimentHub, SpatialData, Homo_sapiens_Data, Mus_musculus_Data, LungCancerData
 License: GPL (>= 3)
 Encoding: UTF-8
@@ -32,6 +32,6 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 Depends: 
-    R (>= 2.10)
-LazyData: true
+    R (>= 4.4)
+LazyData: false
 Config/testthat/edition: 3

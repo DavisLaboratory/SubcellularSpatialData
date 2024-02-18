@@ -6,9 +6,9 @@
 #' @param bin a character, stating whether transcripts should be binned into cells or hexbins. The default is 'cell', however, it is advisable to use 'hexbin' when cell identification is not accurate (e.g., when cell boundaries are inferred only from nuclei and not directly measured using cytoplasmic/cell membrane stains).
 #' @param nbins a numeric, stating the number of bins to create in the x and y axes
 #' 
-#' @details 
+#' @details
 #' 
-#' @section Data description:
+#' ## Data description
 #' This function works on all data associated with this package. For new datasets, the transcript table MUST have the following columns:
 #' \itemize{
 #'  \item{sample_id} {Unique identifier for the sample the transcript belongs to.}
@@ -23,7 +23,7 @@
 #' 
 #' The "region" column is optional and only required if binning by regions. If present, it must be a character or factor. For datasets within this package, this column stored the independently annotated histological region.
 #' 
-#' @section Summarisation:
+#' ## Summarisation
 #' When transcript counts are aggregated (using any approach), aggregation of numeric columns is performed using the `mean(..., na.rm = TRUE)` function and aggregation of character/factor columns is performed such that the most frequent class becomes the representative class. As such, for a hex bin, the highest frequency region for the transcripts allocated to the bin becomes the bin's region annotation. New coordinates for cells, bins, or regions are computed using the mean function as well, therefore represent the center of mass for the object. For hex and square bins, the average coordinate is computed by default, however, x and y indices for the bin are stored in the colData under the *bin_x* and *bin_y* columns. 
 #' 
 #' When aggregation is perfomed using bins or regions, an additional column, _ncells_, is computed that indicates how many unique cells are present within the bin/region. Do note that if a cell overlaps multiple bins/regions, it will be counted in each bin/region.
@@ -162,7 +162,7 @@ tx2spe <- function(x, bin = c('cell', 'hex', 'square', 'region'), nbins = 100) {
 #'
 #' @return a numeric, containing the index of bins to which each point was allocated
 #'
-#' @examples
+#' @keywords internal
 allocateHex <- function(x, y, bins = 30, ...) {
   stopifnot(length(x) == length(y))
   stopifnot(bins > 0)
@@ -196,7 +196,7 @@ allocateHex <- function(x, y, bins = 30, ...) {
 #'
 #' @return a numeric, containing the index of bins to which each point was allocated
 #'
-#' @examples
+#' @keywords internal
 allocateSquare <- function(x, y, bins = 30, ...) {
   stopifnot(length(x) == length(y))
   stopifnot(bins > 0)
@@ -222,7 +222,7 @@ allocateSquare <- function(x, y, bins = 30, ...) {
 #'
 #' @return a numeric, containing the index of bins to which each point was allocated
 #'
-#' @examples
+#' @keywords internal
 allocateRegion <- function(x, y, regions, ...) {
   stopifnot(length(x) == length(y))
   stopifnot(length(x) == length(regions))
