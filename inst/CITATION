@@ -1,0 +1,28 @@
+bibentry(
+  bibtype = "Article",
+  title = "Library size confounds biology in spatial transcriptomics data",
+  author = c(
+    suppressWarnings(person("Dharmesh", "Bhuva", "D")),
+    suppressWarnings(person("Chin", "Tan", "Wee")),
+    person("Agus", "Salim"),
+    person("Claire", "Marceaux"),
+    suppressWarnings(person("Marie", "Pickering", "A")),
+    person("Jinjin", "Chen"),
+    person("Malvika", "Kharbanda"),
+    person("Xinyi", "Jin"),
+    person("Ning", "Liu"),
+    person("Kristen", "Feher"),
+    person("Givanna", "Putri"),
+    suppressWarnings(person("Wayne", "Tilley", "D")),
+    suppressWarnings(person("Theresa", "Hickey", "E")),
+    person("Marie-Liesse", "Asselin-Labat"),
+    person("Belinda", "Phipson"),
+    suppressWarnings(person("Melissa", "Davis", "J"))
+  ),
+  journal = "Genome Biology",
+  year = 2024,
+  volume = 25,
+  number = 1,
+  pages = 99,
+  publisher = "Springer",
+  DOI = "https://doi.org/10.1186/s13059-024-03241-7")

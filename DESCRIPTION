@@ -1,6 +1,6 @@
 Package: SubcellularSpatialData
 Title: Annotated spatial transcriptomics datasets from 10x Xenium, NanoString CosMx and BGI STOmics.
-Version: 1.1.0
+Version: 0.99.13
 Authors@R: c(
             person(given = "Dharmesh D.",
                    family = "Bhuva",
@@ -13,7 +13,7 @@ biocViews: ExperimentHub, SpatialData, Homo_sapiens_Data, Mus_musculus_Data, Lun
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 URL: https://davislaboratory.github.io/SubcellularSpatialData
 BugReports: https://github.com/DavisLaboratory/SubcellularSpatialData/issues
 Imports: 
