@@ -182,8 +182,8 @@ allocateHex <- function(x, y, bins = 30, ...) {
 
   hix = data.frame(
     bin_id = hix,
-    bin_x = hix %/% hx@dimen[2],
-    bin_y = hix %% hx@dimen[2],
+    bin_x = hix %% hx@dimen[2],
+    bin_y = hix %/% hx@dimen[2],
     coord_x = hxy$x[as.character(hix)],
     coord_y = hxy$y[as.character(hix)],
     area = area_hex
