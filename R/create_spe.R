@@ -174,14 +174,19 @@ allocateHex <- function(x, y, bins = 30, ...) {
   # compute bin coords
   hxy = hexbin::hcell2xy(hx)
   names(hxy$x) = names(hxy$y) = as.character(hx@cell)
-  nbinx = hx@dimen[2]
-  bin_y = trunc((hix - 1) / nbinx) # compute y index
+
+  # compute bin area
+  # robustly compute height of triangle in hexagon
+  h = diff(hx@xbnds) / hx@xbins * 0.5
+  area_hex = h ^ 2 * 6 / sqrt(3)
+
   hix = data.frame(
     bin_id = hix,
-    bin_x = (hix - 1) %% nbinx * 2 + bin_y %% 2,
-    bin_y = bin_y,
+    bin_x = hix %/% hx@dimen[2],
+    bin_y = hix %% hx@dimen[2],
     coord_x = hxy$x[as.character(hix)],
-    coord_y = hxy$y[as.character(hix)]
+    coord_y = hxy$y[as.character(hix)],
+    area = area_hex
   )
 
   return(hix)
@@ -201,14 +206,25 @@ allocateSquare <- function(x, y, bins = 30, ...) {
   stopifnot(length(x) == length(y))
   stopifnot(bins > 0)
   
-  #compute bin widths
+  # compute bin widths
+  yrng = diff(range(y))
   bw = diff(range(x)) / bins
   x = ceiling((x - min(x)) / bw)
   y = ceiling((y - min(y)) / bw)
   x[x == 0] = 1
   y[y == 0] = 1
   max_x = max(x)
-  sqix = data.frame(bin_id = x + (y - 1) * max_x, bin_x = x, bin_y = y)
+  max_y = max(y)
+
+  # compute area
+  lasty_wd = yrng %% bw
+  if (lasty_wd == 0) {
+    area_rect = wd ^ 2
+  } else {
+    area_rect = ifelse(y == max_y, bw * lasty_wd, bw^2)
+  }
+
+  sqix = data.frame(bin_id = x + (y - 1) * max_x, bin_x = x, bin_y = y, area = area_rect)
 
   return(sqix)
 }
