@@ -217,11 +217,11 @@ allocateSquare <- function(x, y, bins = 30, ...) {
   max_y = max(y)
 
   # compute area
-  lasty_wd = yrng %% bw
-  if (lasty_wd == 0) {
-    area_rect = wd ^ 2
+  lasty_bw = yrng %% bw
+  if (lasty_bw == 0) {
+    area_rect = bw ^ 2
   } else {
-    area_rect = ifelse(y == max_y, bw * lasty_wd, bw^2)
+    area_rect = ifelse(y == max_y, bw * lasty_bw, bw^2)
   }
 
   sqix = data.frame(bin_id = x + (y - 1) * max_x, bin_x = x, bin_y = y, area = area_rect)
